@@ -15,6 +15,8 @@ import javax.swing.UIManager;
  */
 public class MainServer extends javax.swing.JFrame {
 
+    private Database db;
+
     /**
      * Creates new form MainServer
      */
@@ -22,13 +24,15 @@ public class MainServer extends javax.swing.JFrame {
         initComponents();
         initIcon();
     }
+
     public void initIcon() {
-        
+
         Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Resources/iconTShare.png"));
         this.setIconImage(image);
         setLocationRelativeTo(null);
-    
+
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -168,9 +172,14 @@ public class MainServer extends javax.swing.JFrame {
         String port = txtPort.getText();
         String username = txtUsername.getText();
         String password = new String(txtPassword.getPassword());
-        if(host.isEmpty() || port.isEmpty() || username.isEmpty() || password.isEmpty()) {
+        if (host.isEmpty() || port.isEmpty() || username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(this, "The information you entered is not complete", "Notification", JOptionPane.ERROR_MESSAGE);
-            return ;
+            return;
+        }
+        try {
+            db = new Database(this, host, port, username, password);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Connect Failer", "Notification", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnStartActionPerformed
 
@@ -200,9 +209,9 @@ public class MainServer extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        try{
+        try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Error set Look and Feeel");
         }
         /* Create and display the form */
@@ -214,7 +223,7 @@ public class MainServer extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnStart;
+    public javax.swing.JButton btnStart;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -222,7 +231,7 @@ public class MainServer extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    public javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField txtHost;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPort;
