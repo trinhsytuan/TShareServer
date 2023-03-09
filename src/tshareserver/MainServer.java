@@ -80,7 +80,7 @@ public class MainServer extends javax.swing.JFrame {
 
         jLabel6.setText("Password:");
 
-        txtPassword.setText("01216173877Tuan");
+        txtPassword.setText("01216173877Tuan-");
 
         btnStart.setText("Start");
         btnStart.setFocusCycleRoot(true);
@@ -179,8 +179,10 @@ public class MainServer extends javax.swing.JFrame {
         }
         try {
             db = new Database(this, host, port, username, password);
+            sc = new SocketServer(this, db);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Connect Failer", "Notification", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Connect Failer, please check connection to DB", "Notification", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_btnStartActionPerformed
     public void RetryStart() {
