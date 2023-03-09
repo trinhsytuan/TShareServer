@@ -4,10 +4,198 @@
  */
 package tshareserver;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Vector;
+
 /**
  *
  * @author Admin
  */
-public class SocketServer {
-    
+class ServerThread extends Thread {
+
+    public Socket socket = null;
+    public SocketServer server = null;
+    public String username = "";
+    public int ID = -1;
+    public ObjectInputStream streamIn = null;
+    public ObjectOutputStream streamOut = null;
+    public MainServer ui;
+
+    public ServerThread(SocketServer _server, Socket _socket) {
+        super();
+        server = _server;
+        socket = _socket;
+        ID = socket.getPort();
+        ui = server.ui;
+    }
+
+    public void send(Message msg) {
+        try {
+            streamOut.writeObject(msg);
+            System.out.println(msg.content);
+            streamOut.flush();
+        } catch (Exception ex) {
+            System.err.println("Exception: Error");
+            ex.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void run() {
+        ui.jTextArea1.append("\nServer Thread " + ID + " running.");
+        while (true) {
+            try {
+                Message msg = (Message) streamIn.readObject();
+                server.handle(ID, msg);
+            } catch (Exception ioe) {
+                System.out.println(ID + " ERROR reading: ");
+                ioe.printStackTrace();
+                server.remove(ID);
+                stop();
+            }
+        }
+    }
+
+    public void close() throws IOException {
+        if (socket != null) {
+            socket.close();
+        }
+        if (streamIn != null) {
+            streamIn.close();
+        }
+        if (streamOut != null) {
+            streamOut.close();
+        }
+    }
+
+    public void open() throws IOException {
+        streamOut = new ObjectOutputStream(socket.getOutputStream());
+        streamOut.flush();
+        streamIn = new ObjectInputStream(socket.getInputStream());
+    }
+
+    public int getID() {
+        return ID;
+    }
+}
+
+public class SocketServer implements Runnable {
+
+    public ServerThread cilents[];
+    public ServerSocket server = null;
+    public Thread thread = null;
+    public int clientCount = 0, port = 2023;
+    public MainServer ui;
+    public Database db;
+
+    public SocketServer(MainServer ui, Database db) {
+        cilents = new ServerThread[100];
+        this.ui = ui;
+        this.db = db;
+        try {
+            server = new ServerSocket(port);
+            port = server.getLocalPort();
+            ui.jTextArea1.append("Server started IP:" + InetAddress.getLocalHost() + " Port:" + server.getLocalPort());
+            start();
+        } catch (IOException IOE) {
+            ui.jTextArea1.append("Can not bind to port " + port + "\nRetrying start");
+            ui.RetryStart();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void stop() {
+        if (thread != null) {
+            thread.stop();
+            thread = null;
+        }
+    }
+
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this);
+            thread.start();
+        }
+    }
+
+    private int findClient(int ID) {
+        for (int i = 0; i < clientCount; i++) {
+            if (cilents[i].getID() == ID) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @SuppressWarnings("deprecation")
+    public synchronized void remove(int ID) {
+        int pos = findClient(ID);
+        if (pos >= 0) {
+            ServerThread toTerminate = cilents[pos];
+            ui.jTextArea1.append("\nRemoving client thread " + ID + " at " + pos);
+            if (pos < clientCount - 1) {
+                for (int i = pos + 1; i < clientCount; i++) {
+                    cilents[i - 1] = cilents[i];
+                }
+            }
+            clientCount--;
+            try {
+                toTerminate.close();
+            } catch (IOException ioe) {
+                ui.jTextArea1.append("\nError closing thread: " + ioe);
+            }
+            toTerminate.stop();
+        }
+    }
+
+    public void handle(int id,Message msg) {
+
+    }
+
+    private void addThread(Socket socket) {
+        if (clientCount < cilents.length) {
+            ui.jTextArea1.append("\nClient accepted: " + socket);
+            cilents[clientCount] = new ServerThread(this, socket);
+            try {
+                cilents[clientCount].open();
+                cilents[clientCount].start();
+                clientCount++;
+            } catch (IOException ioe) {
+                ui.jTextArea1.append("\nError opening thread: " + ioe);
+            }
+        } else {
+            ui.jTextArea1.append("\nClient refused: Maximum " + cilents.length + " reached.");
+        }
+    }
+
+    @Override
+    public void run() {
+        while (thread != null) {
+            try {
+                ui.jTextArea1.append("\nWaiting for a client ...");
+                addThread(server.accept());
+            } catch (Exception ioe) {
+                ui.jTextArea1.append("\nServer accept error: \n");
+                ui.RetryStart();
+            }
+        }
+    }
+
+    public ServerThread findUserThread(String usr) {
+        for (int i = 0; i < clientCount; i++) {
+            if (cilents[i].username.equals(usr)) {
+                return cilents[i];
+            }
+        }
+        return null;
+    }
 }

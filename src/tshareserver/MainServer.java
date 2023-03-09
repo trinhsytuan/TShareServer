@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 public class MainServer extends javax.swing.JFrame {
 
     private Database db;
+    SocketServer sc;
 
     /**
      * Creates new form MainServer
@@ -182,6 +183,12 @@ public class MainServer extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Connect Failer", "Notification", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnStartActionPerformed
+    public void RetryStart() {
+        if (sc != null) {
+            sc.stop();
+        }
+        sc = new SocketServer(this, db);
+    }
 
     /**
      * @param args the command line arguments
