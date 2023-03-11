@@ -184,6 +184,7 @@ public class MainServer extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Connect Failer, please check connection to DB", "Notification", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
+            
     }//GEN-LAST:event_btnStartActionPerformed
     public void RetryStart() {
         if (sc != null) {

@@ -4,6 +4,8 @@
  */
 package Code;
 
+import javax.swing.UIManager;
+
 /**
  *
  * @author Admin
@@ -14,7 +16,13 @@ public class TShareServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        try{
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        MainServer server= new MainServer();
+        server.setVisible(true);
     }
     
 }

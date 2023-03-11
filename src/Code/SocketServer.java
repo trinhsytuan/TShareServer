@@ -157,8 +157,57 @@ public class SocketServer implements Runnable {
         }
     }
 
-    public void handle(int id,Message msg) {
+    public void handle(int id, Message msg) {
+        if (msg.type.equals("SIGNUP")) {
+            if (findUserThread(msg.sender) == null) {
+                if (db.checkUsernameRegister(msg.sender)) {
+                    db.addUser(msg.sender, msg.content);
+                    cilents[findClient(id)].username = msg.sender;
+                    sendNewMem(msg.sender);
+                    cilents[findClient(id)].send(new Message("SIGNUP", "SERVER", "ACCEPT", msg.sender));
+                } else {
+                    cilents[findClient(id)].send(new Message("SIGNUP", "SERVER", "NOACCEPT", msg.sender));
+                }
+            }
+        } else if (msg.type.equals("LOGIN")) {
+            if (db.login(msg.sender, msg.content, msg.recipient)) {
+                cilents[findClient(id)].username = msg.sender;
+                cilents[findClient(id)].send(new Message("LOGIN", "SERVER", "ACCEPT", msg.sender));
+            } else {
+                cilents[findClient(id)].send(new Message("LOGIN", "SERVER", "NOACCEPT", msg.sender));
+            }
+        } else if (msg.type.equals("BYE")) {
+            remove(id);
+        } else if (msg.type.equals("GetUser")) {
+            cilents[findClient(id)].send(new Message("GetUser", "SERVER", "ListUser", msg.sender, db.ListUser(msg.sender)));
+        } else if (msg.type.equals("SendToUser")) {
+            if (CheckOnline(msg.content)) {
+                cilents[findClient(id)].send(new Message("SendMem", "SERVER", "ONLINE", msg.content, db.GetKeyUser(msg.content)));
+            } else {
+                cilents[findClient(id)].send(new Message("SendMem", "SERVER", "OFFINE", msg.content));
+            }
+        } else if (msg.type.equals("upload_req")) {
+            ServerThread dba = findUserThread(msg.recipient);
+            if (dba != null) {
+                dba.send(new Message("upload_req", msg.sender, msg.content, msg.recipient));
+            } else {
+                cilents[findClient(id)].send(new Message("req_fail", "SERVER","",msg.sender));
+            }
 
+        } else if (msg.type.equals("upload_res")) {
+            if (!msg.content.equals("NO")) {
+                String IP = findUserThread(msg.sender).socket.getInetAddress().getHostAddress();
+                ServerThread dba = findUserThread(msg.recipient);
+                if (dba != null) {
+                    dba.send(new Message("upload_res", IP, msg.content, msg.recipient));
+                }
+            } else {
+                ServerThread dba = findUserThread(msg.recipient);
+                if (dba != null) {
+                    dba.send(new Message("upload_res_noaccept", msg.sender, msg.content, msg.recipient));
+                }
+            }
+        }
     }
 
     private void addThread(Socket socket) {
@@ -174,6 +223,16 @@ public class SocketServer implements Runnable {
             }
         } else {
             ui.jTextArea1.append("\nClient refused: Maximum " + cilents.length + " reached.");
+        }
+    }
+
+    public void sendNewMem(String username) {
+        Vector<String> mem = db.ListUser(username);
+        for (int i = 0; i < mem.size(); i++) {
+            ServerThread dba = findUserThread(mem.get(i));
+            if (dba != null) {
+                dba.send(new Message("NEWUSER", "SERVER", username, mem.get(i)));
+            }
         }
     }
 
@@ -197,5 +256,14 @@ public class SocketServer implements Runnable {
             }
         }
         return null;
+    }
+
+    public boolean CheckOnline(String username) {
+        for (int i = 0; i < clientCount; i++) {
+            if (cilents[i].username.equals(username)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
