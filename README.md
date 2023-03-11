@@ -6,7 +6,7 @@ Sau đó vào MySQL Workbench tạo 1 database có tên TShare, chuẩn là utf8
 <br/>
 Tiếp tục, vào chỗ Create SQL Query, vào đó rồi sau đó mở File TuanSQL, paste vào chỗ Create SQL Query để nó execute(Tạo các Function, bảng ...vv)
 <br/>
-Rồi, xong vào netbench, chỗ library install cái jdbc vào(Đã để trong Project TShare Server)
+Rồi, xong vào netbench, chỗ library install cái jdbc vào(Đã để trong Project TShare Server tên là MySQL_Connector gì đó)
 <br/>
 Sau đó, mở file TShareServer.java điền thông tin MySQL để start TShare Server
 <br/>
