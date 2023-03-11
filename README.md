@@ -11,4 +11,5 @@ Rồi, xong vào netbench, chỗ library install cái jdbc vào(Đã để trong
 Sau đó, mở file TShareServer.java điền thông tin MySQL để start TShare Server
 <br/>
 Chúc bạn thành công
+<br/>
 <a href="https://github.com/trinhsytuan/TShareClient">Link tới TShare Client, phải có đủ Client Server mới OK</a>
