@@ -80,8 +80,6 @@ public class MainServer extends javax.swing.JFrame {
 
         jLabel6.setText("Password:");
 
-        txtPassword.setText("01216173877Tuan-");
-
         btnStart.setText("Start");
         btnStart.setFocusCycleRoot(true);
         btnStart.addActionListener(new java.awt.event.ActionListener() {
