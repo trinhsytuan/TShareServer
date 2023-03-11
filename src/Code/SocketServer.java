@@ -162,7 +162,6 @@ public class SocketServer implements Runnable {
             if (findUserThread(msg.sender) == null) {
                 if (db.checkUsernameRegister(msg.sender)) {
                     db.addUser(msg.sender, msg.content);
-                    cilents[findClient(id)].username = msg.sender;
                     sendNewMem(msg.sender);
                     cilents[findClient(id)].send(new Message("SIGNUP", "SERVER", "ACCEPT", msg.sender));
                 } else {
