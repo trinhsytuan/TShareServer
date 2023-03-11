@@ -80,6 +80,12 @@ public class MainServer extends javax.swing.JFrame {
 
         jLabel6.setText("Password:");
 
+        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPasswordActionPerformed(evt);
+            }
+        });
+
         btnStart.setText("Start");
         btnStart.setFocusCycleRoot(true);
         btnStart.addActionListener(new java.awt.event.ActionListener() {
@@ -184,6 +190,11 @@ public class MainServer extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_btnStartActionPerformed
+
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+        // TODO add your handling code here:
+        btnStartActionPerformed(evt);
+    }//GEN-LAST:event_txtPasswordActionPerformed
     public void RetryStart() {
         if (sc != null) {
             sc.stop();
