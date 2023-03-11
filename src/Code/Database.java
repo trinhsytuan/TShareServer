@@ -94,9 +94,10 @@ public class Database {
         }
 
     }
+
     public Vector<String> GetKeyUser(String Username) {
         try {
-            ResultSet rs = tv.executeQuery("CALL GetKeyUser('"+Username+"')");
+            ResultSet rs = tv.executeQuery("CALL GetKeyUser('" + Username + "')");
             Vector<String> user = new Vector<String>();
             rs.next();
             user.add(rs.getString("Username"));

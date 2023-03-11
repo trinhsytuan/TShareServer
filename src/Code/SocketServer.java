@@ -191,7 +191,7 @@ public class SocketServer implements Runnable {
             if (dba != null) {
                 dba.send(new Message("upload_req", msg.sender, msg.content, msg.recipient));
             } else {
-                cilents[findClient(id)].send(new Message("req_fail", "SERVER","",msg.sender));
+                cilents[findClient(id)].send(new Message("req_fail", "SERVER", "", msg.sender));
             }
 
         } else if (msg.type.equals("upload_res")) {

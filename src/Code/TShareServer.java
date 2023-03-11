@@ -16,13 +16,13 @@ public class TShareServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try{
+        try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        MainServer server= new MainServer();
+        MainServer server = new MainServer();
         server.setVisible(true);
     }
-    
+
 }
