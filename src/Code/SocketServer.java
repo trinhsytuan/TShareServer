@@ -194,14 +194,12 @@ public class SocketServer implements Runnable {
 
         } else if (msg.type.equals("upload_res")) {
             if (!msg.content.equals("NO")) {
-                
                 String IP = msg.rs.get(0);
-                String IP2 = findUserThread(msg.sender).socket.getInetAddress().getHostAddress();
-                String IPFinal = IP2.equals("127.0.0.1") ? IP : IP2;
+               
                 ServerThread dba = findUserThread(msg.recipient);
                 
                 if (dba != null) {
-                    dba.send(new Message("upload_res", IPFinal, msg.content, msg.recipient));
+                    dba.send(new Message("upload_res", IP, msg.content, msg.recipient));
                 }
             } else {
                 ServerThread dba = findUserThread(msg.recipient);
