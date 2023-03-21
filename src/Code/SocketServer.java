@@ -29,7 +29,7 @@ class ServerThread extends Thread {
     public ObjectInputStream streamIn = null;
     public ObjectOutputStream streamOut = null;
     public MainServer ui;
-
+    
     public ServerThread(SocketServer _server, Socket _socket) {
         super();
         server = _server;
@@ -96,7 +96,6 @@ public class SocketServer implements Runnable {
     public int clientCount = 0, port = 2023;
     public MainServer ui;
     public Database db;
-
     public SocketServer(MainServer ui, Database db) {
         cilents = new ServerThread[100];
         this.ui = ui;
@@ -188,7 +187,7 @@ public class SocketServer implements Runnable {
         } else if (msg.type.equals("upload_req")) {
             ServerThread dba = findUserThread(msg.recipient);
             if (dba != null) {
-                dba.send(new Message("upload_req", msg.sender, msg.content, msg.recipient));
+                dba.send(new Message("upload_req", msg.sender, msg.content, msg.recipient,msg.rs));
             } else {
                 cilents[findClient(id)].send(new Message("req_fail", "SERVER", "", msg.sender));
             }
@@ -197,10 +196,12 @@ public class SocketServer implements Runnable {
             if (!msg.content.equals("NO")) {
                 
                 String IP = msg.rs.get(0);
-                System.out.println(IP);
+                String IP2 = findUserThread(msg.sender).socket.getInetAddress().getHostAddress();
+                String IPFinal = IP2.equals("127.0.0.1") ? IP : IP2;
                 ServerThread dba = findUserThread(msg.recipient);
+                
                 if (dba != null) {
-                    dba.send(new Message("upload_res", IP, msg.content, msg.recipient));
+                    dba.send(new Message("upload_res", IPFinal, msg.content, msg.recipient));
                 }
             } else {
                 ServerThread dba = findUserThread(msg.recipient);
