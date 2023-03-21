@@ -41,7 +41,7 @@ class ServerThread extends Thread {
     public void send(Message msg) {
         try {
             streamOut.writeObject(msg);
-            System.out.println(msg.content);
+           
             streamOut.flush();
         } catch (Exception ex) {
             System.err.println("Exception: Error");
